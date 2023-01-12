@@ -1,0 +1,916 @@
+﻿<%@ Page Title="" Language="vb" AutoEventWireup="false" MasterPageFile="~/index.Master" CodeBehind="SeguimientoProyectoCoordinadorNacional.aspx.vb" Inherits="CGR.CSGOL.UI.SeguimientoProyectoCoordinadorNacional" %>
+
+<%@ Register Src="~/userControls/ucBusqueda.ascx" TagPrefix="uc1" TagName="ucBusqueda" %>
+<%@ Register Src="~/userControls/ucGeneralesProyecto.ascx" TagPrefix="uc2" TagName="ucGeneralesProyecto" %>
+<%@ Register Src="~/userControls/ucEncabezados.ascx" TagPrefix="uc11" TagName="ucEncabezados" %>
+<%@ Register Src="~/userControls/ucHistorialRTRD.ascx" TagPrefix="uc6" TagName="ucHistorialRTRD" %>
+<%@ Register Src="~/userControls/ucAdjuntarProyectos.ascx" TagPrefix="uc4" TagName="ucAdjuntarProyectos" %>
+<%@ Register Src="~/userControls/ucFormularioVeeduria.ascx" TagPrefix="uc7" TagName="ucFormularioVeeduria" %>
+<%@ Register Src="~/userControls/ucEnviarRtrdEntidad.ascx" TagPrefix="uc9" TagName="ucEnviarRtrdEntidad" %>
+<%@ Register Src="~/userControls/ucEnviarRtrdCoordinador.ascx" TagPrefix="uc10" TagName="ucEnviarRtrdCoordinador" %>
+<%@ Register Src="~/userControls/ucAdjuntarObservacionRTRD.ascx" TagPrefix="uc8" TagName="ucAdjuntarObservacionRTRD" %>
+<%@ Register Src="~/userControls/ucEnviarEvaluacionTecnica.ascx" TagPrefix="uc11" TagName="ucEnviarEvaluacionTecnica" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+
+
+    <div id="TabsDatosProyecto" runat="server" visible="false" class=" pt-3">
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link bg-light text-dark" href="#" id="BtnGenerales" runat="server"><b>Generales del Proyecto</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bg-light text-dark " href="#" id="BtnDocumentos" runat="server"><b>Documentos Adjuntos</b></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link bg-light text-dark " href="#" id="BtnHistorial" runat="server"><b>Historial</b></a>
+            </li>
+        </ul>
+
+    </div>
+
+    <div id="dvRegresarSuperior" runat="server" class="row pb-2 pt-2" visible="false">
+        <div class="col">
+            <div class="text-right">
+                <asp:Button ID="btnRegresarCB" runat="server" Text="" CssClass="d-none" />
+                <button id="btnRegresarJS" runat="server" type="button" class="btn btn-success" style="border-radius: 50%" data-toggle="tooltip" data-placement="top" title="Cerrar Ventana"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <asp:MultiView ID="MultiView1" runat="server" ActiveViewIndex="0">
+
+        <%-- View User Control Búsqueda --%>
+        <asp:View ID="View0" runat="server">
+            <div class="card">
+                <div class="card-body">
+                    <uc1:ucBusqueda runat="server" ID="ucBusqueda" />
+                </div>
+            </div>
+        </asp:View>
+
+        <%-- View Generales del Proyecto  --%>
+        <asp:View ID="View1" runat="server">
+            <uc2:ucGeneralesProyecto runat="server" ID="ucGeneralesProyecto" />
+        </asp:View>
+
+        <%-- View Documentos adjuntos --%>
+        <asp:View ID="View2" runat="server">
+            <%--<div class="tab-pane fade" aria-labelledby="nav-adjunto-tab">
+                --%>
+                <uc11:ucEncabezados runat="server" ID="ucEncabezadosAdjunto" />
+                <div class="row pt-3 Oculto">
+
+                    <div class="col-12 col-lg-9 col-md-12 col-sm-12 order-2 order-lg-1">
+
+                        <div class="form-group row">
+                            <label for="<%= txtEntidadADJ.ClientID%>" class="col-12 col-sm-4 col-md-3 col-form-label text-md-right">Entidad:</label>
+                            <div class="col-12 col-sm-8 col-md-7">
+                                <asp:TextBox ID="txtEntidadADJ" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="<%= txtDependenciaADJ.ClientID%>" class="col-12 col-sm-4 col-md-3 col-form-label text-md-right">Dependencia:</label>
+                            <div class="col-12 col-sm-8 col-md-8">
+                                <asp:TextBox ID="txtDependenciaADJ" runat="server" CssClass="form-control" ReadOnly="true"></asp:TextBox>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label for="<%= txtDescripcionProyectoADJ.ClientID%>" class="col-12 col-sm-4 col-md-3 col-form-label text-md-right">Descripción del Proyecto:</label>
+                            <div class="col-12 col-sm-8 col-md-9">
+                                <asp:TextBox ID="txtDescripcionProyectoADJ" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" ReadOnly="true"></asp:TextBox>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 col-lg-3 col-md-12 col-sm-12 order-1 order-lg-2">
+                        <div class="form-group row">
+                            <label for="<%= txtExpedienteADJ.ClientID%>" class="col-6 col-sm-2 col-lg-6 col-form-label text-lg-right bg-celeste font-weight-bold">Expediente</label>
+                            <div class="col-6 col-sm-3 col-lg-6">
+                                <asp:TextBox ID="txtExpedienteADJ" runat="server" CssClass="form-control font-weight-bold text-center"></asp:TextBox>
+                            </div>
+
+                            <asp:Label for="<%= txtEstadoADJ.ClientID%>" ID="lblEstado" CssClass="col-6 col-sm-4 col-lg-6 col-form-label text-sm-right font-weight-bold" runat="server" Text="Estado:"></asp:Label>
+                            <div class="col-6 col-sm-3 col-lg-6">
+                                <asp:Label ID="txtEstadoADJ" runat="server" CssClass="form-control-plaintext font-weight-bold"></asp:Label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <%-- Card de Adjuntos --%>
+                <div class="container col-11 ">
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-bold text-white">Documentos Adjuntos</div>
+                        <div class="card-body">
+                            <uc4:ucAdjuntarProyectos runat="server" ID="ucAdjuntarProyectos" />
+                        </div>
+                    </div>
+                </div>
+
+
+        </asp:View>
+
+        <%-- View Historial  --%>
+        <asp:View ID="View3" runat="server">
+
+            <%--  <div class="card mt-2 ml-2 mr-2 ">
+                <div class="card-body">
+                    --%>
+                    <uc11:ucEncabezados runat="server" ID="ucEncabezadosHistorial" />
+                    <%--<uc5:ucDatosVeeduria runat="server" ID="ucDatosVeeduria" />--%>
+                    <%--
+                </div>
+            </div>--%>
+
+            <%-- HISTORIAL RTRD --%>
+            <uc6:ucHistorialRTRD runat="server" ID="ucHistorialRTRD" />
+
+
+        </asp:View>
+
+        <%-- VER EL DETALLE DEL RTRD --%>
+        <asp:View ID="view4" runat="server">
+            <%--<asp:View ID="View5" runat="server">
+                --%>
+                <asp:HiddenField ID="hdnParamFormIdProyecto" runat="server" />
+                <asp:HiddenField ID="hdnParamFormIdRTRD" runat="server" />
+                <div class="row pb-2">
+                    <div class="col-11">
+                        <div class="col text-center">
+                            <h5>
+                                <asp:Label ID="LblTitulosRTRD" runat="server" Text=""></asp:Label>
+                            </h5>
+                        </div>
+                    </div>
+
+                </div>
+                <uc11:ucEncabezados runat="server" ID="ucEncabezadosDetalleRTRD" />
+
+                <div>
+                    <uc7:ucFormularioVeeduria runat="server" ID="ucFormularioVeeduria" />
+                </div>
+
+                <div class="col-12">
+                    <div class="row">
+
+                        <div class="col-6">
+                        </div>
+
+                        <div id="dvBotonesAtencionRTRD" runat="server" class="col-6 d-flex justify-content-around pt-0 mt-0">
+                            <%--<asp:Button ID="btnUpdateEncabezadoEC" runat="server" CssClass="btn btn-success d-none" Text="UpdateEncabezadoSinHallazgos" />--%>
+                            <asp:Button ID="BtnRTRD_SinHallazgos" runat="server" CssClass="btn btn-success" Text="RTRD sin hallazgos" />
+                            <%--<asp:Button ID="BtnRTRD_EnviarEntidad" runat="server" CssClass="btn btn-warning" Text="Enviar a entidad" />--%>
+                            <asp:Button ID="BtnRTRD_EnviarCoordinador" runat="server" CssClass="btn btn-warning" Text="Enviar al Coordinador" />
+                            <asp:Button ID="BtnRTRD_EnviarEntidad" runat="server" CssClass="btn btn-warning" Text="Ver Seguimiento" />
+                            <%--<asp:Button ID="BtnRTRD_Seguimiento" runat="server" CssClass="btn btn-warning" Text="Ver Seguimiento" />--%>
+                            <asp:Button ID="BtnRTRD_Investigacion" runat="server" CssClass="btn btn-danger" Text="Enviar a Investigación" />
+                            <asp:Button ID="BtnRTRD_VerInvestigacion" runat="server" CssClass="btn btn-danger" Text="Ver Investigación" />
+                            <asp:Button ID="BtnRTRD_Devolver" runat="server" CssClass="btn btn-success" Text="Devolver" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dvUserControlEnviarRTRDEntidad" runat="server">
+                    <uc9:ucEnviarRtrdEntidad runat="server" ID="ucEnviarRtrdEntidad" />
+                </div>
+
+                <div id="dvUserControlEnviarRTRDCoordinador" runat="server">
+                    <uc10:ucEnviarRtrdCoordinador runat="server" ID="ucEnviarRtrdCoordinador3" />
+                </div>
+
+            </asp:View>
+
+            <%-- View Cerrar RTRD sin hallazgos --%>
+            <asp:View ID="view5" runat="server">
+
+                <%-- Sección bitacora --%>
+                <%-- <div id="mdlBitacora" class="modal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Bitácora de Seguimiento</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <asp:GridView ID="grvBitacora" runat="server" GridLines="Both" AutoGenerateColumns="False" DataKeyNames="IdObs" CssClass="table table-hover table-striped  " ShowHeaderWhenEmpty="True" BorderColor="#CCCCCC" RowStyle-HorizontalAlign="Center">
+                                            <Columns>
+                                                <asp:TemplateField HeaderText="Id Observación" Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="labelIdObs" runat="server" Text=''></asp:Label>
+                                                    </ItemTemplate>
+                                                    <HeaderStyle HorizontalAlign="Center" />
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+                                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha de Seguimiento" />
+                                                <asp:BoundField DataField="AtendidoPor" HeaderText="Atendido Por" />
+                                                <asp:BoundField DataField="Observacion" HeaderText="Observación" />
+
+                                                <asp:TemplateField HeaderText="Documentos Adjuntos">
+                                                    <ItemTemplate>
+                                                        <asp:GridView ID="grvAdjuntos" runat="server" AutoGenerateColumns="False" DataKeyNames="URLImg" CssClass="table table-bordered mb-0 mt-0 pb-0 pt-0 tableAdjuntoDownloadDef" OnRowCommand="grvAdjuntos_RowCommand" ShowHeader="False">
+                                                            <Columns>
+                                                                <asp:TemplateField>
+                                                                    <ItemTemplate>
+                                                                        <asp:LinkButton ID="lnkBtnDownload" runat="server" CommandArgument="<%# Container.DataItemIndex %>" CommandName="Select">
+                                                                            <i class="fa fa-download" aria-hidden="true"></i>
+                                                                        </asp:LinkButton>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:BoundField DataField="URLImg" HeaderText="" />
+                                                            </Columns>
+
+                                                            <EmptyDataTemplate></EmptyDataTemplate>
+                                                            <FooterStyle CssClass="footerStyle" />
+                                                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                                                            <RowStyle CssClass="rowStyle" />
+                                                        </asp:GridView>
+
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Center" />
+                                                </asp:TemplateField>
+                                            </Columns>
+
+                                            <EmptyDataTemplate></EmptyDataTemplate>
+
+                                            <FooterStyle CssClass="footerStyle" />
+
+                                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+
+                                            <RowStyle CssClass="rowStyle" />
+                                        </asp:GridView>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer pb-1 pt-1">
+                                <asp:Button ID="Button1" runat="server" CssClass="btn btn-secondary" Text="Cerrar" />
+                            </div>
+                        </div>
+                    </div>
+                </div>--%>
+
+                <%--    <div class="text-center">
+                    <h4 class="bg-success pt-1 pb-1" style="border-radius: 5px"><b>Cerrar RTRD sin hallazgos</b></h4>
+                </div>--%>
+
+                <%--       <div id="pnlMotivoCierre" runat="server" class="pb-1" visible="false">
+                    <div class="col-12 pt-1">
+
+                        <div class="form-group row">
+                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                <label class="font-weight-bold" for="<%= TxtObservacion_SinHallazgos.ClientID%>">Motivo de Cierre:</label>
+                                <asp:TextBox ID="txtResultadoMotivoCierre" Class="form-control" runat="server" TextMode="MultiLine" Rows="2"></asp:TextBox>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>--%>
+
+                <%--      <div class="col-12">
+                    <div class="row ">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 ">
+                            --%>
+                            <%-- Observaciones --%>
+                            <%--        <div class="col-12 form-group pb-0 mb-0">
+                                <label for="<%= TxtObservacion_SinHallazgos.ClientID%>"><b>Observación:</b></label><span class="text-danger ml-1"><b>*</b></span>
+                                <asp:TextBox ID="TxtObservacion_SinHallazgos" Class="form-control" runat="server" TextMode="MultiLine" Rows="13"></asp:TextBox>
+                            </div>
+                        </div>--%>
+
+                        <%-- Adjuntar --%>
+                        <%--     <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 pt-2 pb-0 mb-0">
+                            <label></label>
+                            <uc8:ucAdjuntarObservacionRTRD runat="server" ID="ucAdjuntarObservacionRTRD" />
+                        </div>
+                    </div>--%>
+
+                    <%-- Boton Guardar--%>
+                    <%--    <div class="row">
+                        <div id="pnlbtnGuardarObs" runat="server" class="col-xl-10 col-lg-12 col-md-12 col-sm-12 ml-2 text-center">
+                            <asp:Button ID="btnGuardarObs" runat="server" CssClass="btn btn-primary col-xl-2 col-lg-3 col-md-8 col-sm-12 align-items-end" Text="Guardar" />
+                        </div>
+                    </div>--%>
+
+                    <%--
+                </div>--%>
+
+                <%-- <hr></hr>--%>
+
+
+
+                <%--            <div class="col-12 text-right">
+                    <asp:LinkButton ID="btnBitacora" runat="server" class="btn btn-light mb-2" Style="border: solid 1px; border-color: lightgray">
+                        <i class="fas fa-tasks h5 mr-1"></i>
+                        <b class="h5">Bitácora</b>
+                    </asp:LinkButton>
+                    <asp:Button ID="BtnCerrarRTRD" runat="server" CssClass="btn btn-success" Text="Cerrar RTRD" />
+                </div>--%>
+
+                <%-- Cerrado por: --%>
+
+                <%--  <div id="pnlDatosLider" runat="server" class="text-right bg-success pt-1 pb-1" style="border-radius: 5px" visible="false">
+                    <asp:Label runat="server" Style="border-radius: 5px">
+                        <b>
+                            Cerrado por:
+                            <asp:Label ID="lblDatosLiderProvincial" runat="server" Text="" CssClass="mr-3"></asp:Label>
+                        </b>
+                    </asp:Label>
+                </div>--%>
+            </asp:View>
+
+            <%-- view Enviar RTRD a la Entidad – Bitácora de Seguimiento --%>
+            <asp:View ID="view6" runat="server">
+                <uc11:ucEncabezados runat="server" ID="ucEncabezadosDetalleRTRD1" />
+
+                <div id="dvSeguimientoEntidad" runat="server" class="">
+
+                    <div id="dvBotonesSeguimiento" runat="server" class="text-center ">
+                        <%-- <asp:Button ID="dvBtnNuevoSeguimiento" runat="server" Text="Nuevo Seguimiento" CssClass="btn btn-warning mr-2 col-auto  mb-3" />--%>
+                        <asp:Button ID="dvBtnEnviarEvaluacion" runat="server" Text="Enviar a Evaluación Técnica" CssClass="btn text-Orange mr-2 col-auto  mb-3" />
+                        <%-- <asp:Button ID="dvBtnCerrarRTRD" runat="server" Text="Cerrar RTRD" CssClass="btn btn-success mr-2 col-auto  mb-3" />
+                        <asp:Button ID="dvBtnEnviarCoordinador" runat="server" Text="Enviar al Coordinador" CssClass="btn btn-danger col-auto  mb-3" />--%>
+                        <asp:Button ID="BtnUpdateEncabezado" runat="server" CssClass="btn btn-success d-none" Text="UpdateEncabezado" />
+                    </div>
+
+                    <div class="text-center">
+                        <h4 class="bg-warning pt-1 pb-1" style="border-radius: 5px" id="lblTituloSeguimiento" runat="server"><b>Seguimiento a la Entidad - Líder Provincial</b></h4>
+                    </div>
+
+                    <div class="mb-0 pb-0 form-group">
+                        <label id="lblDatosUserEnviaCorreoEntidad" runat="server" class="font-weight-bold bg-light text-dark"><b>Correo Enviado a la entidad por el Líder Provincial</b></label>
+                        <asp:TextBox ID="TxtMensajCorreoEnviadoEntidad" Class="form-control" runat="server" TextMode="MultiLine" Rows="2" ReadOnly="true"></asp:TextBox>
+                    </div>
+
+                    <div id="lblListaAutoridades" runat="server" class="text-center card pt-1 mt-2 bg-light">
+                        <label class="font-weight-bold h5" for="<%= grvContactoSeguimiento.ClientID%>">Lista de Autoridades a las que se le envió Correo Electrónico</label>
+                    </div>
+
+                    <%-- Grid de Autoridades --%>
+                    <div class="table-responsive">
+                        <asp:GridView ID="grvContactoSeguimiento" runat="server" ShowHeaderWhenEmpty="true" GridLines="None" AutoGenerateColumns="False" CssClass="table dataTable table-bordered table-hover">
+                            <Columns>
+                                <asp:BoundField DataField="NombreCompleto" HeaderText="Contacto de la entidad" HeaderStyle-BackColor="LightGray" />
+                                <asp:BoundField DataField="BuzonCorreo" HeaderText="Correo de contacto" HeaderStyle-BackColor="LightGray" />
+                                <asp:BoundField DataField="Telefono" HeaderText="Teléfono de contacto" HeaderStyle-BackColor="LightGray" />
+                            </Columns>
+
+                            <EmptyDataTemplate>
+                                <div class="text-center text-danger col-12">
+                                    <label class="text-danger">Sin registros que mostrar</label>
+                                </div>
+                            </EmptyDataTemplate>
+                            <%-- optional--%>
+                            <FooterStyle CssClass="footerStyle" />
+                            <%-- Mandatory--%>
+                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                            <%-- Mandatory--%>
+                            <RowStyle CssClass="rowStyle" />
+
+                        </asp:GridView>
+
+                    </div>
+
+                    <%-- GridView de Seguimiento a la entidad --%>
+                    <div class="table-responsive mt-1">
+                        <div class="text-center card pt-1 mt-2 bg-light">
+                            <label class="font-weight-bold h5" for="<%= grvBitacoraSeguimientos.ClientID%>">Historial de Seguimiento a la Entidad</label>
+                        </div>
+                        <asp:GridView ID="grvBitacoraSeguimientos" runat="server" DataKeyNames="IdObs" AutoGenerateColumns="False" CssClass="dataTable table table-hover table-striped" ShowHeaderWhenEmpty="True" BorderColor="#CCCCCC" RowStyle-HorizontalAlign="Center">
+                            <Columns>
+                                <asp:TemplateField HeaderText="Id Observación" Visible="false">
+                                    <ItemTemplate>
+                                        <asp:Label ID="labelIdObs" runat="server" Text=''></asp:Label>
+                                    </ItemTemplate>
+                                    <HeaderStyle HorizontalAlign="Center" />
+                                    <ItemStyle HorizontalAlign="Left" />
+                                </asp:TemplateField>
+
+                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha de Seguimiento" />
+                                <asp:BoundField DataField="AtendidoPor" HeaderText="Atendido Por" />
+                                <asp:BoundField DataField="Observacion" HeaderText="Observación" />
+
+                                <%--Listar los adjuntos--%>
+                                <asp:TemplateField HeaderText="Documentos Adjuntos">
+                                    <ItemTemplate>
+                                        <asp:Label ID="dvLabelNoData" runat="server" Text="No hay Adjuntos"></asp:Label>
+                                        <asp:GridView ID="grvAdjuntosSeguimientos" runat="server" AutoGenerateColumns="False" DataKeyNames="URLImg" CssClass="table table-bordered mb-0 mt-0 pb-0 pt-0" OnRowCommand="grvAdjuntos_RowCommand" ShowHeader="False">
+                                            <Columns>
+                                                <asp:TemplateField>
+                                                    <ItemTemplate>
+                                                        <asp:LinkButton ID="lnkBtnDownload" runat="server" CommandArgument="<%# Container.DataItemIndex %>" CommandName="Select">
+                                                            <i class="fa fa-download" aria-hidden="true"></i>
+                                                        </asp:LinkButton>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+                                                <asp:BoundField DataField="URLImg" HeaderText="" />
+                                            </Columns>
+
+                                            <EmptyDataTemplate></EmptyDataTemplate>
+                                            <FooterStyle CssClass="footerStyle" />
+                                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                                            <RowStyle CssClass="rowStyle" />
+                                        </asp:GridView>
+                                        <%--  --%>
+                                    </ItemTemplate>
+                                    <ItemStyle HorizontalAlign="Center" />
+
+
+                                </asp:TemplateField>
+                            </Columns>
+
+                            <EmptyDataTemplate>
+                                <div class="text-center text-danger col-12">
+                                    <label class="text-danger">Sin registros que mostrar</label>
+                                </div>
+                            </EmptyDataTemplate>
+                            <%-- optional--%>
+                            <FooterStyle CssClass="footerStyle" />
+                            <%-- Mandatory--%>
+                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                            <%-- Mandatory--%>
+                            <RowStyle CssClass="rowStyle" />
+                        </asp:GridView>
+                    </div>
+
+
+                </div>
+
+
+
+                <%-- Modal Nuevo Seguimiento --%>
+                <div id="mdlNuevoSeguimiento" class="modal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+                            <div class="modal-header pt-1 pb-1 bg-warning">
+                                <h4 class="font-weight-bold modal-title">Nuevo Seguimiento a la Entidad</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <%--<div id="dvMotivoEnvioEntidad" runat="server" class="col-xl-6  mt-0">
+                                    --%>
+                                    <div class="col-xl-10 col-sm-12 form-group pb-0 mb-3 ml-2">
+                                        <label id="lblEtiquetaMotivo" runat="server" class="font-weight-bold">Motivo:</label>
+                                        <asp:TextBox ID="txtMotivoCierre" Class="form-control" runat="server" TextMode="MultiLine" Rows="2" ReadOnly="true"></asp:TextBox>
+                                    </div>
+                                    <%--
+                                </div>--%>
+
+                                <div class="col-12 mb-0 pb-0">
+                                    <div class="row">
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                                            <%-- Observaciones --%>
+                                            <div class="col-12 mb-0 pb-0 form-group">
+                                                <label id="lblEtiquetatxtObservacion" class="font-weight-bold" runat="server" for="<%= txtObsEnviarEntidad.ClientID%>"><b>Observación de Seguimiento:</b></label><span id="lblRequeridoMensajEntidad" runat="server" class="text-danger ml-1"><b>*</b></span>
+                                                <asp:TextBox ID="txtObservacionSeguimiento" Class="form-control" runat="server" TextMode="MultiLine" Rows="14"></asp:TextBox>
+                                                <div id="Div1" runat="server" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pr-0 mr-0 ml-2 text-right pt-2">
+                                                    <button type="button" id="BtnGuardarSeguimientoJS" class="btn btn-warning">Guardar Seguimiento</button>
+                                                    <asp:Button ID="BtnGuardarSeguimientoCB" runat="server" CssClass="Oculto btn btn-warning col-xl-4 col-lg-3 col-md-8 col-sm-12 mt-2 align-items-end mr-2" Text="Guardar Seguimiento" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <%-- Adjuntar --%>
+                                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 pt-2">
+                                            <label></label>
+                                            <uc8:ucAdjuntarObservacionRTRD runat="server" ID="ucAdjuntarObservacionRTRD1" />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <%-- UserControl de Envio al Coordinador --%>
+                <div id="DvUcCoordinador" runat="server">
+                    <uc10:ucEnviarRtrdCoordinador runat="server" ID="ucEnviarRtrdCoordinador1" />
+                </div>
+
+            </asp:View>
+
+
+    </asp:MultiView>
+
+    <div id="dvResultadosEvaluaciónTecnica" runat="server">
+        <uc11:ucEnviarEvaluacionTecnica runat="server" ID="ucEnviarEvaluacionTecnica" />
+    </div>
+
+    <%-- Modal de cierre de RTRD sin Hallazgos --%>
+    <div id="mdlCerrarRTRDSinHallazgos" class="modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="height: 880px; width: 100%; overflow-y: auto;">
+                <div class="modal-header bg-success pt-1 pb-1">
+                    <h4 id="lblTituloModalCierreRTRD" runat="server" class="modal-title font-weight-bold">Cerrar RTRD sin Hallazgos</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-12 form-group">
+
+                        <%-- Encabezado --%>
+                        <uc11:ucEncabezados runat="server" ID="ucEncabezados" />
+
+
+                        <div id="pnlMotivoCierre" runat="server" class="pb-1">
+                            <div class="col-12 pt-1">
+
+                                <div class="form-group row">
+                                    <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                        <label class="font-weight-bold" for="<%= TxtObservacion_SinHallazgos.ClientID%>">Motivo de Cierre:</label>
+                                        <asp:TextBox ID="txtResultadoMotivoCierre" Class="form-control" runat="server" TextMode="MultiLine" Rows="2" ReadOnly="true"></asp:TextBox>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="row ">
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 ">
+                                    <%-- Observaciones --%>
+                                    <div class="col-12 form-group pb-0 mb-0">
+                                        <label id="lbletiquetaTxtMotivoCierre" class="font-weight-bold" runat="server" for="<%= TxtObservacion_SinHallazgos.ClientID%>"><b>Motivo de Cierre:</b></label><span id="RequeridoMotivoCierre" runat="server" class="text-danger ml-1"><b>*</b></span>
+                                        <asp:TextBox ID="TxtObservacion_SinHallazgos" Class="form-control" runat="server" TextMode="MultiLine" Rows="13"></asp:TextBox>
+
+                                        <div id="pnlbtnGuardarObs" runat="server" class="col-xl-12 col-lg-12 col-md-12 col-sm-12 ml-2 text-right">
+                                            <button type="button" id="BtnGuardarOBSJS" class="btn btn-primary align-items-end">Guardar</button>
+                                            <asp:Button ID="btnGuardarObs" runat="server" CssClass="btn btn-primary align-items-end d-none" Text="Guardar" />
+                                            <asp:Button ID="BtnCerrarRTRD" runat="server" CssClass="btn btn-success" Text="Cerrar RTRD" />
+                                        </div>
+
+                                        <div class="col-12 text-center">
+                                            <asp:Button ID="btnVerEvaluacion" runat="server" CssClass="btn text-white ml-3" Text="Ver Evaluación Técnica" Style="background-color: orangered" />
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+
+
+
+                                <%-- Adjuntar --%>
+                                <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 pt-2 pb-0 mb-0">
+                                    <label></label>
+                                    <uc8:ucAdjuntarObservacionRTRD runat="server" ID="ucAdjuntarObservacionRTRD" />
+                                </div>
+                            </div>
+
+                            <%-- Boton Guardar--%>
+                            <%--  <div class="row">
+                                <div id="pnlbtnGuardarObs" runat="server" class="col-xl-10 col-lg-12 col-md-12 col-sm-12 ml-2 text-center">
+                                    <button type="button" id="BtnGuardarOBSJS" class="btn btn-primary align-items-end">Guardar</button>
+                                    <asp:Button ID="btnGuardarObs" runat="server" CssClass="btn btn-primary align-items-end d-none" Text="Guardar" />
+
+                                </div>
+                            </div>--%>
+                        </div>
+
+
+                        <%-- Cerrado por: --%>
+                        <div id="pnlDatosLider" runat="server" class="text-right bg-success mt-2 pt-1 pb-1" style="border-radius: 5px" visible="false">
+                            <asp:Label runat="server" Style="border-radius: 5px">
+                                <b>
+                                    Cerrado por:
+                                    <asp:Label ID="lblDatosLiderProvincial" runat="server" Text="" CssClass="mr-3"></asp:Label>
+                                </b>
+                            </asp:Label>
+                        </div>
+
+                        <%-- fin --%>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+
+                    <%--  <asp:Button ID="BtnCerrarRTRD" runat="server" CssClass="btn btn-success" Text="Cerrar RTRD" />--%>
+
+                    <%-- Panel de Seguimiento a la entidad --%>
+                    <div id="PnlSeguimientoEntidad" class="col-12" runat="server" visible="false">
+
+                        <div class="text-center bg-warning ml-1" style="border-radius: 5px;">
+                            <h4 id="lblTituloBitacora" runat="server" class=" pt-1 pb-1 text-white" style="border-radius: 5px"><b>Seguimiento a la Entidad - Lider Provincial </b></h4>
+                        </div>
+
+                        <div id="dvDatosCorreoEnviaEntidad" class="mb-0 pb-0 form-group" runat="server" visible="false">
+                            <label id="lblDatosUsuarioEnviaCorreoEntidad" runat="server" class="font-weight-bold bg-light text-dark"><b>Correo Enviado a la entidad por el Líder Provincial</b></label>
+                            <asp:TextBox ID="TxtMensajeCorreoEnviadoEntidad" Class="form-control" runat="server" TextMode="MultiLine" Rows="3" ReadOnly="true"></asp:TextBox>
+                        </div>
+
+
+                        <%--Mostrar Listado de los contactos de la entidad a las que se enviaron correo--%>
+                        <%--<div class="col-12">
+                            --%>
+                            <%--<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 pb-3">
+                                --%>
+                                <%--<div class="col-12 mb-0 pb-0 form-group">
+                                    --%>
+                                    <label id="lblEtiquetaDatosCorreo" class="font-weight-bold bg-light text-dark" runat="server"><b>Correo Enviado a la entidad</b></label>
+                                    <%--<div id="dvgrvContactosEntidad" runat="server" class="col-6 mt-4">
+                                        --%>
+                                        <div id="dvlblListadeAutoridades" runat="server" class="text-center card pt-1 mt-2" style="background-color: lightgray">
+                                            <label class="font-weight-bold h5" for="<%= ListadoContactos.ClientID%>">Se enviará correo a las siguientes autoridades de la entidad</label>
+                                        </div>
+
+                                        <%--<div class="col-12">
+                                            --%>
+                                            <div class="text-center card pt-1 mt-2 bg-light">
+                                                <label class="font-weight-bold h5">Lista de Autoridades a las que se le envió Correo Electrónico</label>
+                                            </div>
+
+                                            <div id="ListadoContactos" runat="server">
+                                                <div class="table-responsive">
+                                                    <asp:GridView ID="grvContactos" runat="server" AutoGenerateColumns="False" CssClass="table datatable table-bordered table-hover">
+                                                        <Columns>
+                                                            <asp:BoundField DataField="NombreCompleto" HeaderText="Contacto de la entidad" />
+                                                            <asp:BoundField DataField="BuzonCorreo" HeaderText="Correo de contacto" />
+                                                            <asp:BoundField DataField="Telefono" HeaderText="Teléfono de contacto" />
+                                                        </Columns>
+
+                                                        <EmptyDataTemplate></EmptyDataTemplate>
+                                                        <%-- optional--%>
+                                                        <FooterStyle CssClass="footerStyle" />
+                                                        <%-- Mandatory--%>
+                                                        <HeaderStyle CssClass="headerStyle thead-ligh" />
+                                                        <%-- Mandatory--%>
+                                                        <RowStyle CssClass="rowStyle" />
+
+                                                    </asp:GridView>
+                                                </div>
+                                            </div>
+                                            <%--
+                                        </div>--%>
+                                        <%--
+                                    </div>--%>
+
+                                    <%--<asp:TextBox ID="TxtCorreoEnviadoEntidad" Class="form-control" runat="server" TextMode="MultiLine" Rows="3" ReadOnly="true"></asp:TextBox>--%>
+                                    <%--
+                                </div>--%>
+
+
+
+                                <%-- GridView de seguimiento --%>
+                                <div id="dvgridBitacora" runat="server" class="col-12">
+                                    <div class="text-center card pt-1 mt-2 bg-light">
+                                        <label class="font-weight-bold h5" for="<%=grvBitacora.ClientID%>">Historial de Seguimiento a la Entidad</label>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <asp:GridView ID="grvBitacora" runat="server" DataKeyNames="IdObs" AutoGenerateColumns="False" CssClass="table table-hover table-striped " ShowHeaderWhenEmpty="True" BorderColor="#CCCCCC" RowStyle-HorizontalAlign="Center">
+                                            <Columns>
+                                                <asp:TemplateField HeaderText="Id Observación" Visible="false">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="labelIdObs" runat="server" Text=''></asp:Label>
+                                                    </ItemTemplate>
+                                                    <HeaderStyle HorizontalAlign="Center" />
+                                                    <ItemStyle HorizontalAlign="Left" />
+                                                </asp:TemplateField>
+
+                                                <asp:BoundField DataField="FechaRegistro" HeaderText="Fecha de Seguimiento" />
+                                                <asp:BoundField DataField="AtendidoPor" HeaderText="Atendido Por" />
+                                                <asp:BoundField DataField="Observacion" HeaderText="Observación" />
+
+                                                <%--Listar los adjuntos--%>
+                                                <asp:TemplateField HeaderText="Documentos Adjuntos">
+                                                    <ItemTemplate>
+                                                        <asp:Label ID="dvLabelNoData" runat="server" Text="No hay Adjuntos"></asp:Label>
+                                                        <asp:GridView ID="grvAdjuntos" runat="server" AutoGenerateColumns="False" DataKeyNames="URLImg" CssClass="table table-bordered mb-0 mt-0 pb-0 pt-0" OnRowCommand="grvAdjuntos_RowCommand" ShowHeader="False">
+                                                            <Columns>
+                                                                <asp:TemplateField>
+                                                                    <ItemTemplate>
+                                                                        <asp:LinkButton ID="lnkBtnDownload" runat="server" CommandArgument="<%# Container.DataItemIndex %>" CommandName="Select">
+                                                                            <i class="fa fa-download" aria-hidden="true"></i>
+                                                                        </asp:LinkButton>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateField>
+                                                                <asp:BoundField DataField="URLImg" HeaderText="" />
+                                                            </Columns>
+
+                                                            <EmptyDataTemplate>
+                                                                <div class="text-center text-danger col-12">
+                                                                    <label class="text-danger">Sin registros que mostrar</label>
+                                                                </div>
+                                                            </EmptyDataTemplate>
+                                                            <FooterStyle CssClass="footerStyle" />
+                                                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                                                            <RowStyle CssClass="rowStyle" />
+                                                        </asp:GridView>
+
+                                                    </ItemTemplate>
+                                                    <ItemStyle HorizontalAlign="Center" />
+
+                                                </asp:TemplateField>
+                                            </Columns>
+
+                                            <EmptyDataTemplate>
+                                                <div class="text-center text-danger col-12">
+                                                    <label class="text-danger">Sin registros que mostrar</label>
+                                                </div>
+                                            </EmptyDataTemplate>
+                                            <%-- optional--%>
+                                            <FooterStyle CssClass="footerStyle" />
+                                            <%-- Mandatory--%>
+                                            <HeaderStyle CssClass="headerStyle thead-ligh" />
+                                            <%-- Mandatory--%>
+                                            <RowStyle CssClass="rowStyle" />
+                                        </asp:GridView>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <%-- Modal de cierre expediente --%>
+            <div id="mdlCerrarExpediente" class="modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="padding-left:20%;" role="document">
+                    <div class="modal-content" style="height: 545px; width: 80%;">
+                        <div class="modal-header pt-1 pb-1">
+                            <h4 id="H1" runat="server" class="modal-title font-weight-bold">Cerrar Expediente</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-12 form-group">
+                                <div id="pnlMotivoCierreExp" runat="server" class="pb-1">
+                                    <div class="col-12 pt-1">
+
+                                        <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Motivo: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:DropDownList ID="DdlMotivoCierreEx" runat="server" Class="form-control validarCampo" style="width:95%;" AutoPostBack="false"></asp:DropDownList>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Conclusión: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:TextBox id="txtConclusionCierreExp" runat="server" Class="form-control validarCampo" style="width:95%; overflow-y: auto;" TextMode="MultiLine" Rows="10"></asp:TextBox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row text-center">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <asp:Button ID="btnEnviarInvestigacionExp" runat="server" CssClass="btn btn-danger Oculto" Text="Enviar a investigación" />
+                                                <button type="button" id="btnEnviarInvestigacionExpJS" class="btn btn-danger validarCampo">Enviar a investigación</button>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Modal de consulta expediente --%>
+            <div id="mdlConsultaExpediente" class="modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="padding-left:20%;" role="document">
+                    <div class="modal-content" style="height: 450px; width: 80%;">
+                        <div class="modal-header pt-1 pb-1">
+                            <h4 id="H3" runat="server" class="modal-title font-weight-bold">En investigación</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-12 form-group">
+                                <div id="Div3" runat="server" class="pb-1">
+                                    <div class="col-12 pt-1">
+
+                                        <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Motivo: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:DropDownList ID="DdlConsultaMotivo" runat="server" Class="form-control validarCampo" style="width:95%;" AutoPostBack="false"></asp:DropDownList>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Conclusión: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:TextBox id="txtConsultaConclusion" runat="server" Class="form-control validarCampo" style="width:95%; overflow-y: auto;" TextMode="MultiLine" Rows="10"></asp:TextBox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%-- Modal de devolver expediente --%>
+            <div id="mdlDevolverExpediente" class="modal" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="padding-left:20%;" role="document">
+                    <div class="modal-content" style="height: 460px; width: 80%;">
+                        <div class="modal-header pt-1 pb-1">
+                            <h4 id="H2" runat="server" class="modal-title font-weight-bold">Devolver Expediente</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="col-12 form-group">
+                                <div id="Div2" runat="server" class="pb-1">
+                                    <div class="col-12 pt-1">
+
+                                        <%-- <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Motivo: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:DropDownList ID="ddlMotivoDevolver" runat="server" Class="form-control" style="width:95%;" AutoPostBack="false"></asp:DropDownList>
+                                                </div>
+                                            </div>
+
+                                        </div>--%>
+                                        <div class="form-group row">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <label class="font-weight-bold">Motivo: </label><span class="text-danger ml-1"><b>*</b></span>
+                                                <div>
+                                                    <asp:TextBox id="txtMotivoDevolver" runat="server" Class="form-control" style="width:95%; overflow-y: auto;" TextMode="MultiLine" Rows="10"></asp:TextBox>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row text-center">
+                                            <div class="col-12 form-group pb-0 mb-0 ml-2">
+                                                <asp:Button ID="btnDevolver" runat="server" CssClass="btn btn-success Oculto" Text="Devolver" />
+                                                <button type="button" id="btnDevolverJS" class="btn btn-success validarCampo">Devolver</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pnlBotonRegresar" runat="server" class="text-left col-12 pt-3" visible="false">
+                <asp:Button ID="BtnRegresar" runat="server" Text="Regresar" Class="btn btn-primary" />
+            </div>
+
+            <asp:HiddenField ID="FlagOpcionRetorno" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagIdProyecto" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagIdRTRD" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagEstadoRTRD" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagIdVisitaRTRD" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagIdExpediente" runat="server" Value="0" />
+            <asp:HiddenField ID="FlagIdMotivoCierre" runat="server" Value="0" />
+            <asp:TextBox ID="FlagEnvioDirectoCoordinador" runat="server" CssClass="d-none" Text="0"></asp:TextBox>
+            <asp:HiddenField ID="ParamIdListaContactosEntidad" runat="server" Value="0" />
+            <asp:HiddenField ID="EditUser" runat="server" Value="non" Visible="false" />
+            <asp:HiddenField ID="Identificador" runat="server" Value="non" Visible="false" />
+
+
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="scriptOnly" runat="server">
+    <script><%=notifyModal%></script>
+    <script src="../scripts/Formas/SeguimientoProyectoLP.js"></script>
+    <script src="../scripts/Formas/SeguimientoProyectoCN.js"></script>
+    <script src="../scripts/Formas/SeguimientoProyecto.js"></script>
+</asp:Content>
